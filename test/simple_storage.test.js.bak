@@ -1,0 +1,78 @@
+const SimpleStorage = artifacts.require("SimpleStorage");
+
+const BN = web3.utils.BN; //exists a global instance of web3 in truffle
+
+const chai = require('chai')
+const should = chai.should();
+const bnChai = require('bn-chai');
+//const { assertRevert } = require('./assertReverts');
+chai.use(bnChai(BN));  // we inform that we will use Chai
+
+
+async function assertRevert (promise) {
+  try {
+    await promise;
+  }
+  catch (error) {
+    error.message.should.include("revert", `Expected "revert", got ${error} instead`);
+    return;
+  }
+  should.fail("Expected revert but was not received");
+}
+
+
+/*
+ * uncomment accounts to access the test accounts made available by the
+ * Ethereum client
+ * See docs: https://www.trufflesuite.com/docs/truffle/testing/writing-tests-in-javascript
+ */
+contract("SimpleStorage", function (accounts) {
+  it("should assert true", async function () {
+    const instance = await SimpleStorage.new("12345678901234567890", {from: accounts[0]});
+    const contract = instance.contract; // instancia web3 del contrato.
+    const transactionReceipt = await contract.methods.setStoredValue("1234").send({from: accounts[0]});  
+
+    //console.log(transactionReceipt);          
+    transactionReceipt.events.StorageModified.returnValues.modifiedStorageValue
+      .should.equal("1234");
+    transactionReceipt.events.StorageModified.returnValues.msgSender.should.equal(accounts[0]);
+  });
+
+  it("should fail if not owner sending the transaction", async function () {
+    const instance = await SimpleStorage.new("12345678901234567890", {from: accounts[0]});
+    const contract = instance.contract; // instancia web3 del contrato.
+    //await contract.methods.setStoredValue("123456").send({from: accounts[1]});
+    //const promise = contract.methods.setStoredValue("123456").send({from: accounts[1]});
+    //assertRevert(promise);
+    assertRevert(contract.methods.setStoredValue("123456").send({from: accounts[1], gas: 10}));
+  });
+
+
+});
+
+
+
+
+/*
+contract("SimpleStorage", function (accounts) {
+  it("should assert true", async function () {
+    const instance = await SimpleStorage.new("12345678901234567890", {from: accounts[0]});
+    const contract = instance.contract; // instancia web3 del contrato.
+    let _value = await contract.methods.storedValue().call(); //using web3
+    (new BN("12345678901234567855")).should.be.gt.BN(_value);
+  });
+});
+*/
+
+
+/*contract("SimpleStorage", function (accounts) {
+  it("should assert true", async function () {
+    //let deployedContract = await SimpleStorage.deployed(); is better to deploy new contract
+    const instance = await SimpleStorage.new("12345678901234567890", 
+      {from: accounts[0]});
+    const contract = instance.contract; // instancia web3 del contrato.
+    //let _value = await deployedContract.storedValue() //using SDK truffle without call
+    let _value = await contract.methods.storedValue().call(); //using web3
+    assert.equal(_value, "12345678901234567891");
+  });
+});*/

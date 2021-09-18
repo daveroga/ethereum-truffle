@@ -1,0 +1,26 @@
+{
+  "name": "ethereum-truffle",
+  "version": "1.0.0",
+  "description": "npm i -g truffle",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0",
+    "@truffle/hdwallet-provider": "^1.2.6",
+    "bn-chai": "^1.0.1",
+    "chai": "^4.3.4",
+    "chai-bn": "^0.2.1",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.10"
+  }
+}
